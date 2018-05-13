@@ -1,0 +1,1 @@
+Set-NetAdapterAdvancedProperty -name "ethernet" -DisplayName "Speed & Duplex" -DisplayValue "Auto Negotiation"

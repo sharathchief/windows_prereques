@@ -1,0 +1,9 @@
+---
+# headless (default values - no UI)
+winmssqltimezone: localtime
+##default values for storage (when coupled with win_storage - no UI)
+systemDisks:
+  - deviceLabel: C
+    name: Disk0
+	sizeGB: 75
+	diskType: BLOCK

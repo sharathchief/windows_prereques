@@ -1,0 +1,82 @@
+---
+- name: Setting do not move to recyclebin.
+	win_regedit:
+	  path: "HKCU:\Software\Microsoft\windows\CurrentVersion\Policies\Explorer"
+	  name: NoRecycleFiles
+	  data: 1
+- name: Setting the page file size on D drive.
+  win_pagefile:
+    drive: D
+	initial_size: 2048
+	maximum_size: 2048
+	state: present
+
+- name: Getting the page file information from the D drive.
+  win_profile:
+    drive: D
+	
+- name: Install .net version 4.5.2
+  win_chocolatey:
+    name: dotnet
+	state: present
+	version: "4.5.2.2"
+	source: "http://address"
+	params: "-y"
+	force: True
+	
+- name: copy formatSQLdrives.ps1
+  win_copy:
+    src: "../files/formatSQLdrives.ps1"
+	dest: "C:\SRVApps\Utils\formatSQLdrives.ps1"
+	
+- name: Execute powershell script
+  win_shell: C:\SRVApps\Utils\formatSQLdrives.ps1"
+  
+- name: Copy network-card.ps1
+  win_copy: 
+    src: "../files/network-card.ps1"
+	dest: "C:\SRVApps\Utils\network-card.ps1"
+	
+- name: execute powershell scipt network-card.ps1
+  win_shell: C:\SRVApps\Utils\network-card.ps1
+  
+- name: set the timezone"
+  win_timezone:
+    timezone: "{{ winswltimezone }}"
+  when: not(
+           ("{{ winsqltimezone }}" == "localTime")
+		   or
+		   ("{{ winsqltimezone }}" | trim == '')
+		   )
+		  
+- name: "Install Avamar Client"
+  win_chocolatey:
+    force: true
+	name: emcavamarclient
+	params: "-y"
+	source: "http://address"
+	state: present
+	version: "7.4.10158.1"
+	
+- name: Install Avamar SQL agent
+  win_chocolatey:
+    force: true
+	name: emcavamarsqlagent
+	params: "-y"
+	source: "http://address"
+	state: present
+	version: "7.4.10158.1"
+	
+- name: Install Autosys
+  win_chocolatey:
+    force: true
+	name: autosys
+	params: "-y"
+	source: "http://address"
+	state: present
+	version: "11.3.6.2"
+	
+- name: Finally reboot the system to affect all above changes
+  win_reboot:
+    shutdown_timeout: 3600
+	reboot_timeout: 3600
